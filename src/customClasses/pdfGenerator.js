@@ -23,10 +23,12 @@ export default class PdfGenerator {
 
   async generatePdf () {
     this.buildValueToInsertFromCurrentFormationWithTemplateFromStore()
+    console.log(this.valuesToInsert)
     await this.copyFileFromGdocs()
     this.blobReader.readAsText(this.copiedFileFromGdocsAsBlob)
     this.blobReader.onloadend = async () => {
       await this.replaceValuesinCopiedFile()
+      console.log('values replaced')
       await this.downloadNewFileAsPdfFromGdrive()
       switch (this.action) {
         case 'email': this.sendMail()
@@ -42,11 +44,13 @@ export default class PdfGenerator {
 
   async copyFileFromGdocs () {
     this.copiedFileFromGdocsAsBlob = await this.gapi.gdrive.copyFile(this.gdocsTemplateId)
+    console.log('copy file')
     return Promise.resolve()
   }
   async replaceValuesinCopiedFile () {
     const ObjectdocumentFromBlob = JSON.parse(this.blobReader.result)
     this.newFileId = ObjectdocumentFromBlob.id
+    console.log('try to replace values')
     return this.gapi.gdocs.replaceValues(this.newFileId, this.valuesToInsert)
   }
 

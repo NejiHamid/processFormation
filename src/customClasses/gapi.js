@@ -29,8 +29,8 @@ class Gapi {
         this.token = this.gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token
         this.gdocs = new Gdocs(this.gapi.client.docs)
         this.gsheet = new Gsheet(this.gapi.client.sheets)
-        this.gdrive = new Gdrive(this.gapi.client.drive, this.token, this.config.apiKey)
-        this.gmail = new Gmail(this.gapi.client.gmail, this.token, this.config.apiKey)
+        this.gdrive = new Gdrive(this.gapi.client.drive, this.token, 'AIzaSyB16XeS_W_rrxuWTXTKjMO0WdEP1Yj0KPE')
+        this.gmail = new Gmail(this.gapi.client.gmail, this.token, 'AIzaSyB16XeS_W_rrxuWTXTKjMO0WdEP1Yj0KPE')
       })
     })
   }
@@ -60,6 +60,7 @@ class Gdocs {
      * @param {Array} requests tableau d'objet request google doc api ref: https://developers.google.com/docs/api/reference/rest/v1/documents/request
      * @return {Promise} ajax request vers google docs
      */
+    console.log(docId + ' : ' + requests)
     return this.client.documents.batchUpdate({
       documentId: docId,
       resource: {
@@ -154,12 +155,12 @@ class Gdrive {
     return response.blob()
   }
   async copyFile (docId) {
-    const url = `${this.url}${docId}/copy`
+    const url = `${this.url}${docId}`
     const params = {
       method: 'POST',
       headers: this.requestsHeaders
     }
-    const response = await fetch(url, params)
+    const response = await fetch(url + '/copy', params)
     return response.blob()
   }
   async deleteFile (docId) {
