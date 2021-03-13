@@ -29,8 +29,8 @@ class Gapi {
         this.token = this.gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token
         this.gdocs = new Gdocs(this.gapi.client.docs)
         this.gsheet = new Gsheet(this.gapi.client.sheets)
-        this.gdrive = new Gdrive(this.gapi.client.drive, this.token, 'AIzaSyB16XeS_W_rrxuWTXTKjMO0WdEP1Yj0KPE')
-        this.gmail = new Gmail(this.gapi.client.gmail, this.token, 'AIzaSyB16XeS_W_rrxuWTXTKjMO0WdEP1Yj0KPE')
+        this.gdrive = new Gdrive(this.gapi.client.drive, this.token, 'change key')
+        this.gmail = new Gmail(this.gapi.client.gmail, this.token, 'change key')
       })
     })
   }
