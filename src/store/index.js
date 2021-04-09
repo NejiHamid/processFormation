@@ -57,6 +57,36 @@ export default new Vuex.Store({
               { value: 'T', label: 'Terminé' }
             ]
           }
+        },
+        templateGlobal: {
+          /* format dépend de la feuille:
+          pour fiche de formations :
+          {{cle a chercher dans le gdcos template}} : Fiches de formations.0."<nom_colonne>"
+          Pour Elements des fiches de formation :
+          {{cle a chercher dans le gdcos template}} : Elements des fiches de formation."<nom_colonne>".["champ1","champ2"]
+          */
+          '{{Code de fiche de formation}}': `Fiches de formations.0."Code de fiche de formation"`,
+          '{{Duree}}': `Fiches de formations.0."Duree"`,
+          '{{Description de fiche de formation}}': `Fiches de formations.0."Description de fiche de formation"`,
+          '{{Code tarifaire}}': `Fiches de formations.0."Code tarifaire"`
+        },
+        mappingGlobal: {
+          nameSheetFicheFormation: 'Fiches de formations',
+          nameSheetDetailsFormation: 'Elements des fiches de formation',
+          nameColumnJoinWithSheetDetailsFormation: 'Code de fiche de formation',
+          nameColumnGroupByDetailFormation: 'Categorie d\'element',
+          columnsToComplete: { sheet: 'Fiches de formations', columns: ['Version', 'Code tarifaire', 'Code de fiche de formation'] },
+          labelFicheFormation: { sheet: 'Fiches de formations', column: 'Libelle de fiche de formation' }
+        },
+        detailFormationsGlobalMapping: {
+          hideColumns: ['Version', 'Code tarifaire', 'Code de fiche de formation', "Categorie d'element"],
+          buttonsSelect: {
+            "Etat de l'element": [
+              { value: 'AF', label: 'A Faire' },
+              { value: 'EC', label: 'En cours' },
+              { value: 'T', label: 'Terminé' }
+            ]
+          }
         }
       }
     },
@@ -69,7 +99,8 @@ export default new Vuex.Store({
     selectedProject: {
       nom: '',
       sheetId: '',
-      templateId: ''
+      templateId: '',
+      templateGlobalId: ''
     }
   },
   getters: {
@@ -80,8 +111,15 @@ export default new Vuex.Store({
       const version = parseInt(state.version)
       return state.app[version].template
     },
+    currentTemplateGlobal: (state, getters) => {
+      const version = parseInt(state.version)
+      return state.app[version].templateGlobal
+    },
     currentGdocsTemplate: state => {
       return state.selectedProject.templateId
+    },
+    currentGdocsTemplateGlobal: state => {
+      return state.selectedProject.templateGlobalId
     },
     currentSheetsName: state => {
       const sheetsName = Object.keys(state.data)
@@ -100,9 +138,17 @@ export default new Vuex.Store({
       const version = parseInt(state.version)
       return state.app[version].mapping
     },
+    currentMappingGlobal: state => {
+      const version = parseInt(state.version)
+      return state.app[version].mappingGlobal
+    },
     currentDetailFormationMapping: state => {
       const version = parseInt(state.version)
       return state.app[version].detailFormationMapping
+    },
+    currentDetailFormationsGlobalMapping: state => {
+      const version = parseInt(state.version)
+      return state.app[version].detailFormationsGlobalMapping
     },
     currentNameColumnJoinWithSheetDetailsFormation: (state, getters) => {
       return getters.currentMapping.nameColumnJoinWithSheetDetailsFormation
@@ -204,6 +250,14 @@ export default new Vuex.Store({
     updateTemplating (state, newTemplating) {
       const version = parseInt(state.version)
       state.app[version].template = newTemplating
+    },
+    updateMappingGlobal (state, newValue) {
+      const version = parseInt(state.version)
+      state.app[version].mappingGlobal = newValue
+    },
+    updateTemplatingGlobal (state, newTemplating) {
+      const version = parseInt(state.version)
+      state.app[version].templateGlobal = newTemplating
     }
   },
   actions: {

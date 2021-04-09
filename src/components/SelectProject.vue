@@ -43,6 +43,12 @@
               v-model="urlTemplate"
               @change="isEdited=true"
             ></v-text-field>
+                <v-text-field
+              label="Entrez l'url google docs du template pour le programme global"
+              :rules="urlRules"
+              v-model="urlTemplateGlobal"
+              @change="isEdited=true"
+            ></v-text-field>
           </v-col>
         </v-row>
       </v-container>
@@ -81,6 +87,7 @@ export default {
     selectedProject: null,
     urlSheet: '',
     urlTemplate: '',
+    urlTemplateGlobal: '',
     isEdited: false,
     urlRules: [
       v => /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/.test(v) || 'URL doit être valide'
@@ -106,6 +113,9 @@ export default {
         if (project.templateId) {
           this.urlTemplate = `https://docs.google.com/document/d/${project.templateId}/edit#gid=123`
         }
+        if (project.templateGlobalId) {
+          this.urlTemplateGlobal = `https://docs.google.com/document/d/${project.templateGlobalId}/edit#gid=123`
+        }
       }
     },
     async selectProject () {
@@ -116,6 +126,7 @@ export default {
           const index = this.listOfProjects.findIndex(project => project.nom === this.selectedProject)
           project.sheetId = this.urlSheet.split('/')[5]
           project.templateId = this.urlTemplate.split('/')[5]
+          project.templateGlobalId = this.urlTemplateGlobal.split('/')[5]
           this.listOfProjects[index] = project
         }
         this.setSelectedProject(project)

@@ -217,7 +217,7 @@
           <v-btn
             v-if="!mailEmpty"
             color="green lighten-1 white--text"
-            @click="sendByEmail"
+            @click="sendGlobalFormationsByEmail"
           >Envoyer</v-btn>
         </v-card-actions>
       </v-card>
@@ -254,9 +254,12 @@ export default {
       'isSignIn',
       'currentNameColumnJoinWithSheetDetailsFormation',
       'currentTemplate',
+      'currentTemplateGlobal',
       'currentFormation',
       'currentGdocsTemplate',
-      'currentMapping'
+      'currentGdocsTemplateGlobal',
+      'currentMapping',
+      'currentMappingGlobal'
     ]),
     mailEmpty () {
       return this.$_.isEmpty(this.chipsMail)
@@ -303,7 +306,7 @@ export default {
         const promises = []
         this.selectedFormations.forEach(value => {
           const formation = this.currentFormation(value)
-          const pdfgen = new PdfGenerator(this.$gapi, this.currentGdocsTemplate, this.currentTemplate, formation, `${value}.pdf`, 'pdf')
+          const pdfgen = new PdfGenerator(this.$gapi, this.currentGdocsTemplateGlobal, this.currentTemplateGlobal, formation, `${value}.pdf`, 'pdf')
           promises.push(pdfgen.generatePdf())
         })
         Promise.all(promises).then(
@@ -337,8 +340,63 @@ export default {
       })
       return result
     },
-    sendByEmail () {
+    sendGlobalFormationsByEmail () {
+      console.log('ancien', this)
       if (this.selectedFormations.length > 0) {
+        if (this.existValidMail()) {
+          this.showMailDialog = false
+          this.loading = true
+          const promises = []
+          this.selectedFormations.forEach(value => {
+            const formation = this.currentFormation(value)
+            this.chipsMail.forEach(mail => {
+              // eslint-disable-next-line
+              if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
+                let objet = formation[this.currentMappingGlobal.labelFicheFormation.sheet][0][0][this.currentMappingGlobal.labelFicheFormation.column] + ' | ' + this.subject
+                const pdfgen = new PdfGenerator(this.$gapi, this.currentGdocsTemplateGlobal, this.currentTemplateGlobal, formation, `${value}.pdf`, 'email', [{ adress: mail, message: this.body, objet: objet }])
+                promises.push(pdfgen.generatePdf())
+              }
+            })
+          })
+          Promise.all(promises).then(
+            () => {
+              this.alert.message = 'Mails envoyés'
+              this.alert.show = true
+              this.alert.type = 'success'
+              this.loading = false
+              this.chipsMail = []
+              this.body = ''
+              this.subject = ''
+              this.check = []
+              this.selectedFormations = []
+            }
+          ).catch(err => {
+            this.chipsMail = []
+            this.body = ''
+            this.subject = ''
+            this.alert.message = err
+            this.alert.show = true
+            this.loading = false
+            this.alert.type = 'error'
+            this.check = []
+            this.selectedFormations = []
+          })
+        } else {
+          this.alert.message = 'Vous devez saisir une adresse mail valide'
+          this.alert.show = true
+          this.alert.type = 'warning'
+        }
+      } else {
+        this.alert.message = 'Vous devez selectionner au moins une formation'
+        this.alert.show = true
+        this.alert.type = 'warning'
+      }
+      this.selectedFormations = []
+    },
+
+    sendByEmail () {
+      console.log(this)
+      if (this.selectedFormations.length > 1) {
         if (this.existValidMail()) {
           this.showMailDialog = false
           this.loading = true

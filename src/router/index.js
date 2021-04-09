@@ -9,6 +9,7 @@ import AddProject from '@/components/AddProject'
 import Configuration from '@/components/Configuration'
 import store from '../store/index'
 import Template from '@/components/Template'
+import TemplateGlobal from '@/components/TemplateGlobal'
 
 const listOfProjects = store.state.projects
 
@@ -61,6 +62,11 @@ const routes = [{
   path: '/template',
   name: 'template',
   component: Template
+},
+{
+  path: '/templateGlobal',
+  name: 'templateGlobal',
+  component: TemplateGlobal
 }
 ]
 

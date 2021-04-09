@@ -126,6 +126,7 @@ export default {
       { title: 'Ajouter un projet', icon: 'mdi-google-spreadsheet', link: 'new-project' },
       { title: 'Configurer du projet', icon: 'mdi-wrench', link: 'config' },
       { title: 'Configuration du template', icon: 'mdi-file-document-edit', link: 'template' },
+      { title: 'Configuration du template global', icon: 'mdi-file-document-edit', link: 'templateGlobal' },
       { title: 'Condition d\'utilisation', icon: 'mdi-checkbox-marked-circle', link: 'privacy-policy' }
     ],
     icons: [

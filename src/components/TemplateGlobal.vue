@@ -144,7 +144,7 @@ export default {
     ]
   }),
   async mounted () {
-    this.sheets.push(this.currentMapping.nameSheetDetailsFormation, this.currentMapping.nameSheetFicheFormation)
+    this.sheets.push(this.currentMappingGlobal.nameSheetDetailsFormation, this.currentMappingGlobal.nameSheetFicheFormation)
     this.loadGdocsContent()
   },
   methods: {
@@ -166,22 +166,22 @@ export default {
       this.loading = false
     },
     async fetchDataToBeReplaced () {
-      const docContent = await this.$gapi.gdocs.fetchAlltext(this.currentProject.templateId)
+      const docContent = await this.$gapi.gdocs.fetchAlltext(this.currentProject.templateGlobalId)
       console.log(docContent)
       this.valuesToReplace = docContent.match(this.pattern).map(v => {
         const obj = {}
         obj.key = v
-        if (this.currentTemplate[v] !== undefined) {
-          const splited = this.currentTemplate[v].split('.')
+        if (this.currentTemplateGlobal[v] !== undefined) {
+          const splited = this.currentTemplateGlobal[v].split('.')
           obj.sheet = splited[0]
-          if (obj.sheet === this.currentMapping.nameSheetFicheFormation) {
+          if (obj.sheet === this.currentMappingGlobal.nameSheetFicheFormation) {
             obj.field = JSON.parse(splited[2])
           } else {
             obj.field = splited[1]
             obj.values = JSON.parse(splited[2])
           }
         } else {
-          obj.sheet = this.currentMapping.nameSheetFicheFormation
+          obj.sheet = this.currentMappingGlobal.nameSheetFicheFormation
           obj.field = ''
           obj.values = []
         }
@@ -189,7 +189,7 @@ export default {
       })
     },
     setNewMapping () {
-      if (this.$refs.template.validate()) {
+      if (this.$refs.templateGlobal.validate()) {
         this.setTemplate(this.newTemplate)
         this.alertType = 'success'
         this.alertMessage = 'Nouveau template enregistré'
@@ -210,15 +210,15 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'currentMapping',
+      'currentMappingGlobal',
       'currentProject',
-      'currentTemplate',
+      'currentTemplateGlobal',
       'getColumnsForSheet',
       'getValuesGroupByColumns'
     ]),
     newTemplate () {
       return this.valuesToReplace.reduce((acc, obj) => {
-        acc[obj.key] = obj.sheet === this.currentMapping.nameSheetFicheFormation ? `${obj.sheet}.0."${obj.field}"` : `${obj.sheet}.${obj.field}.${JSON.stringify(obj.values)}`
+        acc[obj.key] = obj.sheet === this.currentMappingGlobal.nameSheetFicheFormation ? `${obj.sheet}.0."${obj.field}"` : `${obj.sheet}.${obj.field}.${JSON.stringify(obj.values)}`
         return acc
       }, {})
     }

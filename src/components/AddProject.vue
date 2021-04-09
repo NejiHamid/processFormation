@@ -49,6 +49,11 @@
                             :rules="urlRules"
                             v-model="templateUrl"
                           ></v-text-field>
+                                       <v-text-field
+                            label="Entrez l'url google docs du template pour le programme global"
+                            :rules="urlRules"
+                            v-model="templateGlobalUrl"
+                          ></v-text-field>
                         </v-col>
                       </v-row>
                     </v-card>
@@ -95,6 +100,7 @@ export default {
     alertType: 'success',
     alertMessage: '',
     templateUrl: '',
+    templateGlobalUrl: '',
     projectName: null,
     sheetUrl: null,
     alertValue: false,
@@ -110,11 +116,13 @@ export default {
       if (this.$refs.sheetForm.validate()) {
         const sheetId = this.sheetUrl.split('/')[5]
         const templateId = this.templateUrl.split('/')[5]
+        const templateGlobalId = this.templateGlobalUrl.split('/')[5]
         try {
           this.addNewproject({
             nom: this.projectName,
             sheetId: sheetId,
-            templateId: templateId
+            templateId: templateId,
+            templateGlobalId: templateGlobalId
           })
           this.alertType = 'success'
           this.alertMessage = 'Nouveau projet ajouté avec succès !'
