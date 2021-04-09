@@ -43,6 +43,7 @@ export default class PdfGenerator {
   async generatePdfGlobal(formations) {
     console.log(formations);
     this.buildValueToInsertFromCurrentFormationWithTemplateFromStore()
+    console.log(this.valuesToInsert)
     await this.copyFileFromGdocs()
     this.blobReader.readAsText(this.copiedFileFromGdocsAsBlob)
     this.blobReader.onloadend = async () => {
@@ -54,7 +55,7 @@ export default class PdfGenerator {
         console.log('addRow', await this.gapi.gdocs.getDoc(this.newFileId))
         await this.gapi.gdocs.addContent(this.newFileId)
         console.log(await this.gapi.gdocs.getDoc(this.newFileId))
-        // await this.replaceValuesinCopiedFile()
+        //await this.replaceValuesinCopiedFile()
         console.log('forEach')
       }))
       await this.downloadNewFileAsPdfFromGdrive()

@@ -134,42 +134,13 @@ class Gdocs {
       {
         location:
         {
-          index: 138
+          index: 136
         },
-        text: "1"
+        text: "15899878422"
       }
     }
-      ,
-      {
-        insertText:
-        {
-          location:
-          {
-            index: 136
-          },
-          text: "2"
-        }
-      },
-      {
-        insertText:
-        {
-          location:
-          {
-            index: 164
-          },
-          text: "3"
-        }
-      },
-      {
-        insertText:
-        {
-          location:
-          {
-            index: 166
-          },
-          text: "4"
-        }
-      })
+      
+      )
     return this.batchUpdate(docId, requests)
   }
 

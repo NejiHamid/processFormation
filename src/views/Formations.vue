@@ -365,7 +365,7 @@ export default {
       console.log("ancien", this);
       if (this.selectedFormations.length > 0) {
         if (this.existValidMail()) {
-          this.showMailDialog = false;
+          this.showMailGlobalDialog = false;
           this.loading = true;
           const promises = [];
           let formations = [];
