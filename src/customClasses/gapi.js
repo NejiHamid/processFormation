@@ -11,7 +11,7 @@ class Gapi {
   /** @param {Object} gapi un objet de la librairie gapi injecté dans le index.html
    * @param {Object} config un objet contenant la configuration pour le client gapi
    */
-  constructor (gapi, config) {
+  constructor(gapi, config) {
     this.gapi = gapi
     this.config = config
     this.token = null
@@ -20,7 +20,7 @@ class Gapi {
     this.gdrive = null
     this.gmail = null
   }
-  initClients () {
+  initClients() {
     /** Methode qui permet d'initialiser tous les services googles nécessaires à l'application
      * utilisation de la méthode d'authentification auth2
      */
@@ -41,10 +41,10 @@ class Gapi {
  */
 class Gdocs {
   /** @param {Object} initialGapiClient un client gapi.client.docs initialisé */
-  constructor (initialGapiClient) {
+  constructor(initialGapiClient) {
     this.client = initialGapiClient
   }
-  replaceValues (docId, values) {
+  replaceValues(docId, values) {
     /** Execute une requete vers docs API qui permet de remplacer plusieurs valeurs suivant un pattern
      * @param {String} docId identifiant du document docs
      * @param {Array} values tableau d'objet  {text: 'text', replace:'text'}
@@ -53,7 +53,7 @@ class Gdocs {
     const requests = values.map(v => this.replaceAllText(v))
     return this.batchUpdate(docId, requests)
   }
-  batchUpdate (docId, requests) {
+  batchUpdate(docId, requests) {
     /** @private methode qui execute une methode batchUpdate vers google docs
      *
      * @param {String} docId identifiant du document docs
@@ -67,7 +67,7 @@ class Gdocs {
       }
     })
   }
-  replaceAllText (value) {
+  replaceAllText(value) {
     /** @private methode construit un objet requests pour l'api docs batchUpdate ref : https://developers.google.com/docs/api/reference/rest/v1/documents/request#replacealltextrequest
      * @param {Object} value {text: 'text', replace:'text'}
      * @return {Object} { "replaceText": string,
@@ -86,7 +86,7 @@ class Gdocs {
       }
     }
   }
-  async fetchAlltext (docId) {
+  async fetchAlltext(docId) {
     /** methode qui permet de récupérer tout le texte du docuement
      * @param {String} docId identifiant du document
      *  @return {String} retour de methode ParseDocs
@@ -95,9 +95,85 @@ class Gdocs {
       documentId: docId
     })
     const document = response.result
+    console.log(document)
     return this.parseDocs(document)
   }
-  parseDocs (document) {
+
+  async getDoc(docId) {
+    const response = await this.client.documents.get({
+      documentId: docId
+    })
+    return response.result
+  }
+
+  async addRow(docId) {
+    const startIndexTable = 95
+    /* var document = await this.getDoc(docId)
+     var body = document.body;
+     let tables = body.content[10]
+     console.log(tables);*/
+    var requests = []
+    requests.push({
+      insertTableRow: {
+        tableCellLocation: {
+          tableStartLocation: {
+            index: startIndexTable
+          }
+        },
+        insertBelow: true
+      }
+    }
+    )
+    return this.batchUpdate(docId, requests)
+  }
+
+  async addContent(docId) {
+    var requests = []
+    requests.push({
+      insertText:
+      {
+        location:
+        {
+          index: 138
+        },
+        text: "1"
+      }
+    }
+      ,
+      {
+        insertText:
+        {
+          location:
+          {
+            index: 136
+          },
+          text: "2"
+        }
+      },
+      {
+        insertText:
+        {
+          location:
+          {
+            index: 164
+          },
+          text: "3"
+        }
+      },
+      {
+        insertText:
+        {
+          location:
+          {
+            index: 166
+          },
+          text: "4"
+        }
+      })
+    return this.batchUpdate(docId, requests)
+  }
+
+  parseDocs(document) {
     /**
      * @param {Object} document response de client.document.get => objet doc api
      * @return {String} de tout le texte du document
@@ -128,7 +204,7 @@ class Gdrive {
    * @param  {String} apiKey une clé api pour communiquer avec l'api drive
    */
 
-  constructor (initialGapiClient, token, apiKey) {
+  constructor(initialGapiClient, token, apiKey) {
     this.client = initialGapiClient
     this.url = `https://www.googleapis.com/drive/v3/files/`
     this.token = token
@@ -137,7 +213,7 @@ class Gdrive {
       Authorization: `Bearer ${this.token}`
     }
   }
-  async downloadDocsAsPDF (docId) {
+  async downloadDocsAsPDF(docId) {
     /** Permet de télécharger un document google doc en PDF
      * @param {String} docId identifiant du document google doc
      * @return {Promise} avec un blob contenant le PDF
@@ -153,7 +229,7 @@ class Gdrive {
     const response = await fetch(url, params)
     return response.blob()
   }
-  async copyFile (docId) {
+  async copyFile(docId) {
     const url = `${this.url}${docId}/copy`
     const params = {
       method: 'POST',
@@ -162,7 +238,7 @@ class Gdrive {
     const response = await fetch(url, params)
     return response.blob()
   }
-  async deleteFile (docId) {
+  async deleteFile(docId) {
     const url = `${this.url}${docId}`
     const params = {
       method: 'DELETE',
@@ -179,10 +255,10 @@ class Gsheet {
   /**
    * @param {Gapi} initialGapiClient a gapiSheet client initialized
    */
-  constructor (initialGapiClient) {
+  constructor(initialGapiClient) {
     this.client = initialGapiClient
   }
-  async writeDataTo (docId, rangeObject) {
+  async writeDataTo(docId, rangeObject) {
     const body = {
       valueInputOption: 'RAW',
       data: rangeObject
@@ -191,7 +267,7 @@ class Gsheet {
       spreadsheetId: docId
     }, body)
   }
-  buildRangeObject (data, sheet) {
+  buildRangeObject(data, sheet) {
     const lastRow = data.length + 1
     const lastColumns = this.convertNumberToString(Object.keys(data[0]).length + 1)
     const values = data.reduce((acc, row) => {
@@ -203,7 +279,7 @@ class Gsheet {
       'values': values
     }
   }
-  async fetchDataFrom (docId) {
+  async fetchDataFrom(docId) {
     /**
      * Methode haut niveau qui permet de récupérer toutes les données
      * depuis un document google sheet et de transformer en un tableau
@@ -218,7 +294,7 @@ class Gsheet {
     const sheets = response.result.sheets
     return this.extractData(sheets)
   }
-  extractData (sheets) {
+  extractData(sheets) {
     /** @private Methode qui permet d'extraire les données de la réponse à la methode get du client sheet
      * @param {Array} sheets tableau d'objet sheet
      * @return {object} un tableau d'objet.
@@ -231,7 +307,7 @@ class Gsheet {
     }, {})
   }
 
-  parseSheet (sheet) {
+  parseSheet(sheet) {
     /** @private Methode qui permet d'extraire les données d'un feuille d'un document google sheet
      * @param {Object} sheet un objet sheet du client sheet de google api
      * @return {Array} tableau d'objet.
@@ -249,14 +325,14 @@ class Gsheet {
     })
     return result
   }
-  fetchHeaders (sheetData) {
+  fetchHeaders(sheetData) {
     /** @private methode qui permet de récupérer la première ligne et extrait les valeurs
      * @param {Object} sheetData un objet qui contient les données d'une feuille
      * @return {Array} un tableau de valeur correspondant aux libellé de la première ligne de la feuille
      */
     return sheetData[0].rowData[0].values.map(v => v.formattedValue).filter(v => v !== undefined)
   }
-  valueToJson (row, headers) {
+  valueToJson(row, headers) {
     /** @private methode qui transforme une ligne en objet JSON {<colonne>: <valeurLigne>, range:<A1>}
      * @param {Object} row un objet représentant une ligne
      * @param {Object} headers objet qui contient les valeurs des entêtes des colonnes de la feuille
@@ -273,7 +349,7 @@ class Gsheet {
       return acc
     }, {})
   }
-  convertNumberToString (number) {
+  convertNumberToString(number) {
     /** @private methode qui permet de coonvertir un nombre en string
      * p.ex 1 => A
      * @param {Number} number nombre de type int ou string
@@ -287,7 +363,7 @@ class Gmail {
   /**
    * @param {Gapi} initialGapiClient a gapiSheet client initialized
    */
-  constructor (initialGapiClient, token, apiKey) {
+  constructor(initialGapiClient, token, apiKey) {
     this.client = initialGapiClient
     this.token = token
     this.apiKey = apiKey
@@ -296,7 +372,7 @@ class Gmail {
       'Content-Type': 'message/rfc822'
     }
   }
-  sendEmail (to, subject, message, data) {
+  sendEmail(to, subject, message, data) {
     /** @param {String} to adresse email du destinataire
      *@param {String} adresse email du destinataire
      * @param {String} subject sujet du email
@@ -313,7 +389,7 @@ class Gmail {
     }
     return fetch(url, params)
   }
-  buildEmail (to, subject, message, data) {
+  buildEmail(to, subject, message, data) {
     /** @param {String} adresse email du destinataire
      * @param {String} subject sujet du email
      * @param {String} message messsage du email

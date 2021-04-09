@@ -2,7 +2,7 @@ import { saveAs } from 'file-saver'
 import { pick, isArray } from 'lodash'
 
 export default class PdfGenerator {
-  constructor (gapi, gdocsTemplateId, templateFromStore, currentFormation, pdfName, action, emails = null) {
+  constructor(gapi, gdocsTemplateId, templateFromStore, currentFormation, pdfName, action, emails = null) {
     this.currentFormation = currentFormation
     this.blobReader = new FileReader()
     this.copiedFileFromGdocsAsBlob = null
@@ -21,7 +21,7 @@ export default class PdfGenerator {
     this.errors = []
   }
 
-  async generatePdf () {
+  async generatePdf() {
     this.buildValueToInsertFromCurrentFormationWithTemplateFromStore()
     await this.copyFileFromGdocs()
     this.blobReader.readAsText(this.copiedFileFromGdocsAsBlob)
@@ -40,26 +40,50 @@ export default class PdfGenerator {
     }
   }
 
-  async copyFileFromGdocs () {
+  async generatePdfGlobal(formations) {
+    console.log(formations);
+    this.buildValueToInsertFromCurrentFormationWithTemplateFromStore()
+    await this.copyFileFromGdocs()
+    this.blobReader.readAsText(this.copiedFileFromGdocsAsBlob)
+    this.blobReader.onloadend = async () => {
+      await Promise.all(formations.map( async(formation) => {
+        this.currentFormation = formation
+        const ObjectdocumentFromBlob = JSON.parse(this.blobReader.result)
+        this.newFileId = ObjectdocumentFromBlob.id
+        await this.gapi.gdocs.addRow(this.newFileId)
+        console.log('addRow', await this.gapi.gdocs.getDoc(this.newFileId))
+        await this.gapi.gdocs.addContent(this.newFileId)
+        console.log(await this.gapi.gdocs.getDoc(this.newFileId))
+        // await this.replaceValuesinCopiedFile()
+        console.log('forEach')
+      }))
+      await this.downloadNewFileAsPdfFromGdrive()
+      await this.sendMail()
+      this.gapi.gdrive.deleteFile(this.newFileId)
+    }
+  }
+  async copyFileFromGdocs() {
     this.copiedFileFromGdocsAsBlob = await this.gapi.gdrive.copyFile(this.gdocsTemplateId)
     return Promise.resolve()
   }
-  async replaceValuesinCopiedFile () {
+  async replaceValuesinCopiedFile() {
     const ObjectdocumentFromBlob = JSON.parse(this.blobReader.result)
     this.newFileId = ObjectdocumentFromBlob.id
     return this.gapi.gdocs.replaceValues(this.newFileId, this.valuesToInsert)
   }
 
-  async downloadNewFileAsPdfFromGdrive () {
+  async downloadNewFileAsPdfFromGdrive() {
+    console.log('downloadNewFileAsPdfFromGdrive')
     this.pdfBlob = await this.gapi.gdrive.downloadDocsAsPDF(this.newFileId)
     return Promise.resolve()
   }
 
-  async saveNewFileInBrowserAsPdf () {
+  async saveNewFileInBrowserAsPdf() {
     this.pdfReader.readAsDataURL(this.pdfBlob)
     saveAs(this.pdfBlob, this.pdfName)
   }
-  async sendMail () {
+  async sendMail() {
+    console.log('sendMail')
     this.pdfReader.readAsDataURL(this.pdfBlob)
     this.pdfReader.onloadend = () => {
       let base64data = this.pdfReader.result
@@ -71,7 +95,7 @@ export default class PdfGenerator {
     }
   }
 
-  buildValueToInsertFromCurrentFormationWithTemplateFromStore () {
+  buildValueToInsertFromCurrentFormationWithTemplateFromStore() {
     for (let [key, value] of Object.entries(this.templateFromStore)) {
       let [sheet, sheetKey, propertiesToKeep] = value.split('.')
       propertiesToKeep = JSON.parse(propertiesToKeep)
@@ -92,7 +116,7 @@ export default class PdfGenerator {
       }
     }
   }
-  getFunctionToApply (propertiesToKeep) {
+  getFunctionToApply(propertiesToKeep) {
     if (isArray(propertiesToKeep)) {
       return (obj) => {
         const objectWithSelectedProperties = pick(obj, propertiesToKeep)
@@ -108,7 +132,7 @@ export default class PdfGenerator {
       return (obj) => obj[propertiesToKeep]
     }
   }
-  validateAction () {
+  validateAction() {
     if (!this.allowedActions.includes(this.action)) {
       throw new Error('unsupported action')
     }
