@@ -225,7 +225,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="red darken-1" text @click="showMailDialog = false"
+          <v-btn color="red darken-1" text @click="showMailGlobalDialog = false"
             >Annuler
           </v-btn>
           <v-btn
@@ -321,8 +321,8 @@ export default {
           const formation = this.currentFormation(value);
           const pdfgen = new PdfGenerator(
             this.$gapi,
-            this.currentGdocsTemplateGlobal,
-            this.currentTemplateGlobal,
+            this.currentGdocsTemplate,
+            this.currentTemplate,
             formation,
             `${value}.pdf`,
             "pdf"
@@ -337,6 +337,7 @@ export default {
             this.alert.type = "success";
             this.loading = false;
             this.check = [];
+            this.selectedFormations=[];
           })
           .catch((err) => {
             this.alert.message = err;
@@ -344,12 +345,16 @@ export default {
             this.loading = false;
             this.alert.type = "error";
             this.check = [];
+            this.selectedFormations=[];
+
           });
       } else {
         this.alert.message = "Vous devez selectionner au moins une formation";
         this.alert.show = true;
         this.alert.type = "warning";
+        this.selectedFormations=[];
       }
+    
     },
     existValidMail() {
       let result = false;
@@ -363,7 +368,7 @@ export default {
     },
     sendGlobalFormationsByEmail() {
       console.log("ancien", this);
-      if (this.selectedFormations.length > 0) {
+      if (this.selectedFormations.length > 1) {
         if (this.existValidMail()) {
           this.showMailGlobalDialog = false;
           this.loading = true;
@@ -417,7 +422,7 @@ export default {
           this.alert.type = "warning";
         }
       } else {
-        this.alert.message = "Vous devez selectionner au moins une formation";
+        this.alert.message = "Vous devez selectionner au moins deux formations.";
         this.alert.show = true;
         this.alert.type = "warning";
       }
@@ -426,7 +431,7 @@ export default {
 
     sendByEmail() {
       console.log(this);
-      if (this.selectedFormations.length > 1) {
+      if (this.selectedFormations.length > 0) {
         if (this.existValidMail()) {
           this.showMailDialog = false;
           this.loading = true;
@@ -465,6 +470,8 @@ export default {
               this.body = "";
               this.subject = "";
               this.check = [];
+              this.selectedFormations = [];
+
             })
             .catch((err) => {
               this.chipsMail = [];
@@ -475,6 +482,7 @@ export default {
               this.loading = false;
               this.alert.type = "error";
               this.check = [];
+              this.selectedFormations = [];
             });
         } else {
           this.alert.message = "Vous devez saisir une adresse mail valide";
@@ -486,6 +494,8 @@ export default {
         this.alert.show = true;
         this.alert.type = "warning";
       }
+      this.selectedFormations = [];
+
     },
     minimize() {
       this.minimizeAction = !this.minimizeAction;

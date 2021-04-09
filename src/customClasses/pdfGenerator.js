@@ -102,6 +102,7 @@ export default class PdfGenerator {
       propertiesToKeep = JSON.parse(propertiesToKeep)
       const functionToApply = this.getFunctionToApply(propertiesToKeep)
       try {
+        // TODO
         const data = this.currentFormation[sheet][`${sheetKey}`]
         const arrayOfStringObject = data.map(functionToApply)
         this.valuesToInsert.push({
