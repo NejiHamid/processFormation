@@ -108,6 +108,9 @@
         <v-btn color="yellow" text @click="showMailDialog = true">
           Envoyer par mail
         </v-btn>
+        <v-btn color="orange" text @click="showMailGlobalDialog = true">
+          Envoyer plan global par mail
+        </v-btn>
         <v-btn color="blue" text @click="download"> Télécharger </v-btn>
         <v-btn color="red" text @click="uncheckAllFormations">
           Tout décocher
@@ -121,6 +124,63 @@
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
     <v-dialog v-model="showMailDialog" max-width="600" persistent>
+      <v-card>
+        <v-card-title class="headline">Envoyer un mail</v-card-title>
+        <v-card-text>
+          <v-form ref="sendMail">
+            <v-row dense row="12">
+              <v-col cols="12" ma-2>
+                <v-combobox
+                  v-model="chipsMail"
+                  chips
+                  counter
+                  clearable
+                  label="email"
+                  multiple
+                  solo
+                >
+                  <template
+                    v-slot:selection="{ attrs, item, select, selected }"
+                  >
+                    <v-chip
+                      v-bind="attrs"
+                      :input-value="selected"
+                      close
+                      @click="select"
+                      @click:close="removeEmail(item)"
+                    >
+                      <strong>{{ item }}</strong
+                      >&nbsp;
+                    </v-chip>
+                  </template>
+                </v-combobox>
+              </v-col>
+              <v-col cols="12" ma-2>
+                <v-text-field label="Objet" v-model="subject" outlined required>
+                </v-text-field>
+              </v-col>
+              <v-col cols="12" ma-2>
+                <v-textarea label="Corps du message" v-model="body" required>
+                </v-textarea>
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="red darken-1" text @click="showMailDialog = false"
+            >Annuler
+          </v-btn>
+          <v-btn
+            v-if="!mailEmpty"
+            color="green lighten-1 white--text"
+            @click="sendByEmail"
+            >Envoyer</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="showMailGlobalDialog" max-width="600" persistent>
       <v-card>
         <v-card-title class="headline">Envoyer un mail</v-card-title>
         <v-card-text>
@@ -199,6 +259,7 @@ export default {
     subject: "",
     body: "",
     showMailDialog: false,
+    showMailGlobalDialog : false,
     chipsMail: [],
     selectedFormations: [],
   }),
