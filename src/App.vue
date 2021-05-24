@@ -127,6 +127,7 @@ export default {
       { title: 'Configurer du projet', icon: 'mdi-wrench', link: 'config' },
       { title: 'Configuration du template', icon: 'mdi-file-document-edit', link: 'template' },
       { title: 'Configuration du template global', icon: 'mdi-file-document-edit', link: 'templateGlobal' },
+      { title: 'Indicateurs', icon: 'mdi-view-list', link: '/indicateurs' },
       { title: 'Condition d\'utilisation', icon: 'mdi-checkbox-marked-circle', link: 'privacy-policy' }
     ],
     icons: [

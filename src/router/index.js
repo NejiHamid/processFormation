@@ -10,7 +10,7 @@ import Configuration from '@/components/Configuration'
 import store from '../store/index'
 import Template from '@/components/Template'
 import TemplateGlobal from '@/components/TemplateGlobal'
-
+import Indicateurs from '../views/Indicateurs'
 const listOfProjects = store.state.projects
 
 Vue.use(VueRouter)
@@ -67,7 +67,13 @@ const routes = [{
   path: '/templateGlobal',
   name: 'templateGlobal',
   component: TemplateGlobal
+},
+{
+  path: '/indicateurs',
+  name: 'indicateurs',
+  component: Indicateurs
 }
+
 ]
 
 const router = new VueRouter({

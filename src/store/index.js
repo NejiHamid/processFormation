@@ -30,7 +30,6 @@ export default new Vuex.Store({
           '{{Duree}}': `Fiches de formations.0."Duree"`,
           '{{Description de fiche de formation}}': `Fiches de formations.0."Description de fiche de formation"`,
           '{{Code tarifaire}}': `Fiches de formations.0."Code tarifaire"`,
-          '{{Version}}': `Fiches de formations.0."Version"`,
           '{{Objectifs}}': `Elements des fiches de formation.Objectif.["Numero sequentiel","Description de l'element", "Etat de l'element"]`,
           '{{Déroulement / plan de travail}}': `Elements des fiches de formation.Déroulement / plan de travail.["Numero sequentiel","Description de l'element", "Etat de l'element"]`,
           '{{Support de formation}}': `Elements des fiches de formation.Support de formation.["Numero sequentiel","Description de l'element", "Etat de l'element"]`,
@@ -38,11 +37,13 @@ export default new Vuex.Store({
           '{{Pré-requis stagiaire référent}}': `Elements des fiches de formation.Pré-requis stagiaire référent.["Numero sequentiel","Description de l'element", "Etat de l'element"]`,
           '{{Pré-requis formateur référent}}': `Elements des fiches de formation.Pré-requis formateur référent.["Numero sequentiel","Description de l'element", "Etat de l'element"]`,
           '{{Actions habituelles}}': `Elements des fiches de formation.Actions habituelles.["Numero sequentiel","Description de l'element", "Etat de l'element"]`,
-          '{{Hors formation}}': `Elements des fiches de formation.Hors formation.["Numero sequentiel","Description de l'element", "Etat de l'element"]`
+          '{{Hors formation}}': `Elements des fiches de formation.Hors formation.["Numero sequentiel","Description de l'element", "Etat de l'element"]`,
+          '{{Objectif}}': `Indicateurs.0."Objectif"`
         },
         mapping: {
           nameSheetFicheFormation: 'Fiches de formations',
           nameSheetDetailsFormation: 'Elements des fiches de formation',
+          nameSheetIndicateurs: 'Indicateurs',
           nameColumnJoinWithSheetDetailsFormation: 'Code de fiche de formation',
           nameColumnGroupByDetailFormation: 'Categorie d\'element',
           columnsToComplete: { sheet: 'Fiches de formations', columns: ['Version', 'Code tarifaire', 'Code de fiche de formation'] },
@@ -109,6 +110,7 @@ export default new Vuex.Store({
     },
     currentTemplate: (state, getters) => {
       const version = parseInt(state.version)
+      console.log(state.app[version].template);
       return state.app[version].template
     },
     currentTemplateGlobal: (state, getters) => {
@@ -159,9 +161,13 @@ export default new Vuex.Store({
     currentNameSheetDetailsFormation: (state, getters) => {
       return getters.currentMapping.nameSheetDetailsFormation
     },
+    currentNameSheetIndicateurs: (state, getters) => {
+      return getters.currentMapping.nameSheetIndicateurs
+    },
     currentFormation: (state, getters) => valueJoinWithSheetDetailsFormation => {
       const sheetFicheFormation = getters.currentNameSheetFicheFormation
       const sheetDetailsFormation = getters.currentNameSheetDetailsFormation
+      const sheetIndicateurs = getters.currentNameSheetIndicateurs
       const valueColumnJoinWithSheetDetailsFormation = getters.currentMapping.nameColumnJoinWithSheetDetailsFormation
       const valueColumnGroupByDetailFormation = getters.currentMapping.nameColumnGroupByDetailFormation
       const filteredByValueJoinWithSheetDetailsFormation = state.data[sheetDetailsFormation].filter(obj => obj[valueColumnJoinWithSheetDetailsFormation] === valueJoinWithSheetDetailsFormation)
@@ -172,6 +178,7 @@ export default new Vuex.Store({
         '0': state.data[sheetFicheFormation].filter(obj => obj[valueColumnJoinWithSheetDetailsFormation] === valueJoinWithSheetDetailsFormation)
       }
       formation[sheetDetailsFormation] = detailFormationGroupBy
+      console.log(formation);
       return formation
     },
     currentSheetId: state => {
@@ -181,6 +188,7 @@ export default new Vuex.Store({
       return state.listOfProjects.find(v => v.nom === projectName)
     },
     getColumnsForSheet: state => sheetName => {
+      console.log('sheet',sheetName);
       const model = state.data[sheetName][0]
       return Object.keys(model)
     },
