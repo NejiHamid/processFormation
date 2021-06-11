@@ -50,12 +50,12 @@ export default class PdfGenerator {
     this.blobReader.onloadend = async () => {
       const ObjectdocumentFromBlob = JSON.parse(this.blobReader.result)
       this.newFileId = ObjectdocumentFromBlob.id
-      formations.forEach( formation => {
-        this.updateGlobalTemplate()
-        this.replaceValuesInGlobalTemplate(formation)       
+      formations.forEach( async(formation) => {
+        await this.updateGlobalTemplate()
+        await this.replaceValuesInGlobalTemplate(formation)       
         
       })
-      await this.downloadNewFileAsPdfFromGdrive()
+      //await this.downloadNewFileAsPdfFromGdrive()
       //await this.sendMail()
       //this.gapi.gdrive.deleteFile(this.newFileId)
     }
