@@ -197,7 +197,7 @@ export default new Vuex.Store({
     },
     getFieldsBySheetName: state => {
       const fieldsAvailablePerSheet = Object.keys(state.data).reduce((groupBySheet, sheet) => {
-        if (!groupBySheet[sheet]) {
+        if (!groupBySheet[sheet] && state.data[sheet][0]) {
           groupBySheet[sheet] = Object.keys(state.data[sheet][0]).reduce((fields, name) => {
             if (!fields[name]) {
               fields[name] = ''
