@@ -2,6 +2,7 @@
  * Module qui permet de gérer les différents services google
  */
 
+
 /**
  * Classe maitresse qui est exposée pour l'instance vue, elle est composée de plusieurs classe représentant les différents
  * services google.
@@ -127,20 +128,34 @@ class Gdocs {
     return this.batchUpdate(docId, requests)
   }
 
-  async addContent(docId) {
+  async addContent(docId,values) {
     var requests = []
+    let startIndex = 136
+    const startIndexTable = 95
+
     requests.push({
-      insertText:
-      {
-        location:
-        {
-          index: 136
+      insertTableRow: {
+        tableCellLocation: {
+          tableStartLocation: {
+            index: startIndexTable
+          }
         },
-        text: "15899878422"
+        insertBelow: true
       }
-    }
-      
-      )
+    })
+    values.forEach( value =>{
+      requests.push({
+        insertText:
+        {
+          location:
+          {
+            index: startIndex
+          },
+          text: value.text
+        }
+      })
+      startIndex=startIndex+value.number+2
+    })
     return this.batchUpdate(docId, requests)
   }
 

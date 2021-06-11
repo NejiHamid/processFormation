@@ -66,10 +66,10 @@ export default new Vuex.Store({
           Pour Elements des fiches de formation :
           {{cle a chercher dans le gdcos template}} : Elements des fiches de formation."<nom_colonne>".["champ1","champ2"]
           */
+          '{{Code tarifaire}}': `Fiches de formations.0."Code tarifaire"`,
           '{{Code de fiche de formation}}': `Fiches de formations.0."Code de fiche de formation"`,
-          '{{Duree}}': `Fiches de formations.0."Duree"`,
           '{{Description de fiche de formation}}': `Fiches de formations.0."Description de fiche de formation"`,
-          '{{Code tarifaire}}': `Fiches de formations.0."Code tarifaire"`
+          '{{Duree}}': `Fiches de formations.0."Duree"`
         },
         mappingGlobal: {
           nameSheetFicheFormation: 'Fiches de formations',
